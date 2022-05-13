@@ -1,4 +1,4 @@
-export type AppErrorType = "conflict";
+export type AppErrorType = "conflict" | "not_found" | "unauthorized";
 
 interface AppError {
   type: AppErrorType;
@@ -12,8 +12,26 @@ export function conflictError(message: string): AppError {
   };
 }
 
+export function notFoundError(message: string): AppError {
+  return {
+    type: "not_found",
+    message,
+  };
+}
+
+export function unauthorizedError(message: string): AppError {
+  return {
+    type: "unauthorized",
+    message,
+  };
+}
+
 export function getErrorStatus(type: AppErrorType) {
   switch (type) {
+    case "unauthorized":
+      return 401;
+    case "not_found":
+      return 404;
     case "conflict":
       return 409;
     default:

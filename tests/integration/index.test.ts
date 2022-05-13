@@ -1,6 +1,8 @@
+import supertest from "supertest";
+import bcrypt from "bcrypt";
+
 import userBodyFactory from "../factories/userBodyFactory";
 import prisma from "../../src/database";
-import supertest from "supertest";
 import app from "../../src/app";
 
 describe("Test user and auth related routes", () => {
@@ -31,7 +33,8 @@ describe("Test user and auth related routes", () => {
       const user = userBodyFactory();
       const { email, password } = user;
 
-      await prisma.user.create({ data: user });
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      await prisma.user.create({ data: { ...user, password: hashedPassword } });
 
       const { status, body } = await supertest(app)
         .post("/auth/sign-in")
