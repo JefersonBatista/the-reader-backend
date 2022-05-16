@@ -7,7 +7,7 @@ import app from "../../src/app";
 
 describe("Test user and auth related routes", () => {
   beforeEach(async () => {
-    await prisma.$executeRaw`TRUNCATE TABLE users;`;
+    await prisma.$executeRaw`TRUNCATE TABLE users CASCADE;`;
   });
 
   afterAll(async () => {

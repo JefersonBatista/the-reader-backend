@@ -13,5 +13,79 @@ model User {
   email    String @unique
   password String
 
+  readings          Reading[]
+  notes             Note[]
+  tags              Tag[]
+  readingIntentions ReadingIntention[]
+
   @@map("users")
+}
+
+model Reading {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  title       String
+  author      String?
+  imageUrl    String?
+  startDate   DateTime  @default(now())
+  endDate     DateTime?
+  numChapters Int?
+  numPages    Int?
+  currentPage Int?
+
+  notes Note[]
+
+  @@map("readings")
+}
+
+model Note {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  readingId Int
+  reading   Reading @relation(fields: [readingId], references: [id])
+
+  chapter     Int?
+  page        Int?
+  placeInText String?
+  content     String
+  time        DateTime @default(now())
+
+  tags Tag[]
+
+  @@map("notes")
+}
+
+model Tag {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  name String
+
+  notes Note[]
+
+  @@unique([userId, name])
+  @@map("tags")
+}
+
+model ReadingIntention {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  title    String   @unique
+  author   String?
+  imageUrl String?
+  priority Int      @unique
+  date     DateTime @default(now())
+
+  @@map("readingIntentions")
 }
