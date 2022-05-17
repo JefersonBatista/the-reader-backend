@@ -1,0 +1,22 @@
+name: Pull Request
+on: [pull_request]
+jobs:
+  PullRequest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v1
+        # we need to create an env file because ours is in gitignore
+        with:
+          envkey_POSTGRES_USER: "postgres"
+          envkey_POSTGRES_PASSWORD: "nuvenssaolegais"
+          envkey_POSTGRES_DB: "repoprovas_test"
+
+          envkey_DATABASE_URL: "postgres://postgres:nuvenssaolegais@db:5432/the-reader-test"
+          envkey_JWT_SECRET: "um_segredo_apenas_para_testes_e_nada_mais"
+          envkey_NODE_ENV: "test"
+          file_name: .env.test
+      - name: Run tests
+        run: docker-compose -f docker-compose-test.yml run node_app npm run docker-test
