@@ -26,4 +26,15 @@ async function signIn(data: SignInData) {
   return { token, name: user.name };
 }
 
-export default { signIn };
+function validateToken(token: string) {
+  const jwtSecret = process.env.JWT_SECRET;
+  try {
+    const { userId } = jwt.verify(token, jwtSecret) as { userId: number };
+
+    return userId;
+  } catch {
+    throw unauthorizedError("Token de autenticação inválido");
+  }
+}
+
+export default { signIn, validateToken };

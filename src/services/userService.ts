@@ -14,9 +14,8 @@ async function create(data: CreateUserData) {
   }
 
   const hashedPassword = bcrypt.hashSync(password, 10);
-  data.password = hashedPassword;
 
-  await userRepository.insert(data);
+  await userRepository.insert({ ...data, password: hashedPassword });
 }
 
 export default { create };

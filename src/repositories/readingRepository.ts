@@ -12,13 +12,16 @@ async function insert(userId: number, readingData: CreateReadingData) {
 
 async function findUnfinishedByTitle(title: string) {
   const readings = await prisma.reading.findMany({
-    where: {
-      title,
-      endDate: { equals: null },
-    },
+    where: { title, endDate: { equals: null } },
   });
 
   return readings[0];
 }
 
-export default { insert, findUnfinishedByTitle };
+async function findByUserId(userId: number) {
+  const readings = await prisma.reading.findMany({ where: { userId } });
+
+  return readings;
+}
+
+export default { insert, findUnfinishedByTitle, findByUserId };

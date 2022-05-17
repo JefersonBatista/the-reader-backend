@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { AppErrorType, getErrorStatus } from "../utils/errorUtils.js";
+import { AppErrorType, getErrorHttpStatus } from "../utils/errorUtils.js";
 
 interface Error {
   type?: AppErrorType;
@@ -17,7 +17,7 @@ export default function errorHandler(
   const defaultErrorMsg = "Houve um erro interno no servidor";
 
   if ("type" in error) {
-    const errorStatus = getErrorStatus(error.type);
+    const errorStatus = getErrorHttpStatus(error.type);
     const errorMsg = error.message || defaultErrorMsg;
 
     res.status(errorStatus).send(errorMsg);

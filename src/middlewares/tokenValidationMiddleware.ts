@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
 
+import authService from "../services/authService.js";
 import { unauthorizedError } from "../utils/errorUtils.js";
 
 export default function validateToken(
@@ -15,15 +15,8 @@ export default function validateToken(
   }
 
   const token = authorization?.replace("Bearer ", "");
-
-  const jwtSecret = process.env.JWT_SECRET;
-  try {
-    const { userId } = jwt.verify(token, jwtSecret) as { userId: number };
-
-    res.locals.userId = userId;
-  } catch {
-    throw unauthorizedError("Token de autenticação inválido");
-  }
+  const userId = authService.validateToken(token);
+  res.locals.userId = userId;
 
   next();
 }

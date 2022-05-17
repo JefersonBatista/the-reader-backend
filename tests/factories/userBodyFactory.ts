@@ -1,6 +1,8 @@
 import { faker } from "@faker-js/faker";
 
-export default function userBodyFactory() {
+import { CreateUserData } from "../../src/repositories/userRepository";
+
+export default function userBodyFactory(): CreateUserData {
   return {
     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
     email: faker.internet.email(),
