@@ -16,4 +16,9 @@ async function create(userId: number, data: CreateReadingData) {
   await readingRepository.insert(userId, data);
 }
 
-export default { create };
+async function getByUserId(userId: number) {
+  const readings = await readingRepository.findByUserId(userId);
+  return readings;
+}
+
+export default { create, getByUserId };

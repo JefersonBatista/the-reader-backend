@@ -26,7 +26,7 @@ export function unauthorizedError(message: string): AppError {
   };
 }
 
-export function getErrorStatus(type: AppErrorType) {
+export function getErrorHttpStatus(type: AppErrorType) {
   switch (type) {
     case "unauthorized":
       return 401;

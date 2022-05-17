@@ -14,4 +14,6 @@ readingRouter.post(
   readingController.create
 );
 
+readingRouter.get("/", validateToken, readingController.get);
+
 export default readingRouter;
