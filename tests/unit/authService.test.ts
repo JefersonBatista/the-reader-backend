@@ -1,5 +1,6 @@
 import { jest } from "@jest/globals";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import signInBodyFactory from "../factories/signInBodyFactory";
 import authService from "../../src/services/authService";
@@ -36,6 +37,22 @@ describe("Test authentication service", () => {
       } catch (error) {
         expect(error.type).toBe("unauthorized");
       }
+    });
+  });
+
+  describe("Validate token", () => {
+    it("should throw an unauthorized error if JWT verification fails", () => {
+      jest.spyOn(jwt, "verify").mockImplementation((token, secret) => {
+        throw new Error("Some JWT error");
+      });
+
+      let userId: number;
+      try {
+        userId = authService.validateToken("fake_token");
+      } catch (error) {
+        expect(error.type).toBe("unauthorized");
+      }
+      expect(userId).toBeFalsy();
     });
   });
 });

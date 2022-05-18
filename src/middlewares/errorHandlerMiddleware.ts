@@ -22,6 +22,7 @@ export default function errorHandler(
 
     res.status(errorStatus).send(errorMsg);
   } else {
+    console.log(error);
     res.status(defaultErrorStatus).send(defaultErrorMsg);
   }
 }

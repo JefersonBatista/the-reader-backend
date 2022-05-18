@@ -20,4 +20,16 @@ async function get(req: Request, res: Response) {
   res.send(readings);
 }
 
-export default { create, get };
+async function finish(req: Request, res: Response) {
+  const { userId } = res.locals as { userId: number };
+  const id = parseInt(req.params.id);
+  if (!id) {
+    return res.status(400).send("ID inválido");
+  }
+
+  await readingService.finishById(userId, id);
+
+  res.sendStatus(200);
+}
+
+export default { create, get, finish };

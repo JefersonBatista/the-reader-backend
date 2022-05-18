@@ -139,4 +139,21 @@ describe("Test reading related routes", () => {
       expect(body.length).toBe(2);
     });
   });
+
+  describe("PATCH /readings/:id/finish", () => {
+    it("should return status 200 and add an end date in a reading", async () => {
+      const reading = readingBodyFactory();
+      const { id, title } = await prisma.reading.create({
+        data: { userId, ...reading },
+      });
+
+      const { status } = await supertest(app)
+        .patch(`/readings/${id}/finish`)
+        .set("Authorization", `Bearer ${token}`);
+
+      const updated = await prisma.reading.findFirst({ where: { title } });
+      expect(status).toBe(200);
+      expect(updated.endDate).toBeTruthy();
+    });
+  });
 });
