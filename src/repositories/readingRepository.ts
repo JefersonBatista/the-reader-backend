@@ -24,4 +24,19 @@ async function findByUserId(userId: number) {
   return readings;
 }
 
-export default { insert, findUnfinishedByTitle, findByUserId };
+async function finishById(id: number) {
+  await prisma.reading.update({ where: { id }, data: { endDate: new Date() } });
+}
+
+async function findById(id: number) {
+  const reading = await prisma.reading.findUnique({ where: { id } });
+  return reading;
+}
+
+export default {
+  insert,
+  findUnfinishedByTitle,
+  findByUserId,
+  finishById,
+  findById,
+};

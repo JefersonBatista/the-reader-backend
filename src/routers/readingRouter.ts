@@ -15,5 +15,6 @@ readingRouter.post(
 );
 
 readingRouter.get("/", validateToken, readingController.get);
+readingRouter.patch("/:id/finish", validateToken, readingController.finish);
 
 export default readingRouter;
