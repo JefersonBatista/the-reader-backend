@@ -48,4 +48,18 @@ async function findByIdOrFail(id: number) {
   return reading;
 }
 
-export default { create, getByUserId, finishById };
+async function bookmarkById(userId: number, id: number, page: number) {
+  const reading = await findByIdOrFail(id);
+
+  if (reading.userId !== userId) {
+    throw unauthorizedError("A leitura não é do usuário");
+  }
+
+  if (reading.endDate) {
+    throw conflictError("A leitura já foi finalizada");
+  }
+
+  await readingRepository.bookmarkById(id, page);
+}
+
+export default { create, getByUserId, finishById, bookmarkById };
