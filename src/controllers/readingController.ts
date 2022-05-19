@@ -32,4 +32,17 @@ async function finish(req: Request, res: Response) {
   res.sendStatus(200);
 }
 
-export default { create, get, finish };
+async function bookmark(req: Request, res: Response) {
+  const { userId } = res.locals as { userId: number };
+  const id = parseInt(req.params.id);
+  const { currentPage } = req.body as { currentPage: number };
+  if (!id) {
+    return res.status(400).send("ID inválido");
+  }
+
+  await readingService.bookmarkById(userId, id, currentPage);
+
+  res.sendStatus(200);
+}
+
+export default { create, get, finish, bookmark };

@@ -143,7 +143,7 @@ describe("Test reading related routes", () => {
   describe("PATCH /readings/:id/finish", () => {
     it("should return status 200 and add an end date in a reading", async () => {
       const reading = readingBodyFactory();
-      const { id, title } = await prisma.reading.create({
+      const { id } = await prisma.reading.create({
         data: { userId, ...reading },
       });
 
@@ -151,9 +151,28 @@ describe("Test reading related routes", () => {
         .patch(`/readings/${id}/finish`)
         .set("Authorization", `Bearer ${token}`);
 
-      const updated = await prisma.reading.findFirst({ where: { title } });
+      const updated = await prisma.reading.findUnique({ where: { id } });
       expect(status).toBe(200);
       expect(updated.endDate).toBeTruthy();
+    });
+  });
+
+  describe("PATCH /readings/:id/bookmark", () => {
+    it("should return status 200 and set the current page of a reading", async () => {
+      const reading = readingBodyFactory();
+      const { id } = await prisma.reading.create({
+        data: { userId, ...reading },
+      });
+
+      const currentPage = Math.floor(200 * Math.random()) + 1;
+      const { status } = await supertest(app)
+        .patch(`/readings/${id}/bookmark`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ currentPage });
+
+      const updated = await prisma.reading.findUnique({ where: { id } });
+      expect(status).toBe(200);
+      expect(updated.currentPage).toBe(currentPage);
     });
   });
 });

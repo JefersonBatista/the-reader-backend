@@ -33,10 +33,15 @@ async function findById(id: number) {
   return reading;
 }
 
+async function bookmarkById(id: number, currentPage: number) {
+  await prisma.reading.update({ where: { id }, data: { currentPage } });
+}
+
 export default {
   insert,
   findUnfinishedByTitle,
   findByUserId,
   finishById,
   findById,
+  bookmarkById,
 };
