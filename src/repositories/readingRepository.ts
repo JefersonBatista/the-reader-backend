@@ -10,12 +10,12 @@ async function insert(userId: number, readingData: CreateReadingData) {
   await prisma.reading.create({ data: { userId, ...readingData } });
 }
 
-async function findUnfinishedByTitle(title: string) {
-  const readings = await prisma.reading.findMany({
-    where: { title, endDate: { equals: null } },
+async function findUnfinishedByTitle(userId: number, title: string) {
+  const reading = await prisma.reading.findFirst({
+    where: { userId, title, endDate: { equals: null } },
   });
 
-  return readings[0];
+  return reading;
 }
 
 async function findByUserId(userId: number) {
