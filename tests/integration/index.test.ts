@@ -202,5 +202,22 @@ describe("Test authenticated routes", () => {
         expect(inserted).toBeTruthy();
       });
     });
+
+    describe("GET /reading-intentions", () => {
+      it("should return status 200 and the reading intentions of the user", async () => {
+        const i1 = readingIntentionBodyFactory();
+        const i2 = readingIntentionBodyFactory();
+        await prisma.readingIntention.create({ data: { userId, ...i1 } });
+        await prisma.readingIntention.create({ data: { userId, ...i2 } });
+
+        const { status, body } = await supertest(app)
+          .get("/reading-intentions")
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(status).toBe(200);
+        expect(body.length).toBe(2);
+        expect(body[0].priority < body[1].priority).toBe(true);
+      });
+    });
   });
 });

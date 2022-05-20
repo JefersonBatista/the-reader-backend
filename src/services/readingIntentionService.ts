@@ -14,4 +14,9 @@ async function create(userId: number, data: CreateReadingIntentionData) {
   await readingIntentionRepository.insert(userId, data);
 }
 
-export default { create };
+async function getByUserId(userId: number) {
+  const intentions = readingIntentionRepository.findByUserId(userId);
+  return intentions;
+}
+
+export default { create, getByUserId };

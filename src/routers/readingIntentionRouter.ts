@@ -14,4 +14,6 @@ readingIntentionRouter.post(
   readingIntentionController.create
 );
 
+readingIntentionRouter.get("/", validateToken, readingIntentionController.get);
+
 export default readingIntentionRouter;

@@ -12,4 +12,12 @@ async function create(req: Request, res: Response) {
   res.sendStatus(201);
 }
 
-export default { create };
+async function get(req: Request, res: Response) {
+  const { userId } = res.locals as { userId: number };
+
+  const intentions = await readingIntentionService.getByUserId(userId);
+
+  res.send(intentions);
+}
+
+export default { create, get };
