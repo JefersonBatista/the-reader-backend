@@ -11,6 +11,7 @@ async function create(userId: number, data: CreateReadingData) {
   const { title } = data;
 
   const unfinishedReading = await readingRepository.findUnfinishedByTitle(
+    userId,
     title
   );
   if (unfinishedReading) {

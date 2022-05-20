@@ -81,11 +81,12 @@ model ReadingIntention {
   userId Int
   user   User @relation(fields: [userId], references: [id])
 
-  title    String   @unique
+  title    String
   author   String?
   imageUrl String?
-  priority Int      @unique
+  priority Int      @unique @default(autoincrement())
   date     DateTime @default(now())
 
+  @@unique([userId, title])
   @@map("readingIntentions")
 }
