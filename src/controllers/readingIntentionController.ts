@@ -20,4 +20,28 @@ async function get(req: Request, res: Response) {
   res.send(intentions);
 }
 
-export default { create, get };
+async function increasePriority(req: Request, res: Response) {
+  const { userId } = res.locals as { userId: number };
+  const id = parseInt(req.params.id);
+  if (!id) {
+    return res.status(400).send("ID inválido");
+  }
+
+  await readingIntentionService.increasePriorityById(userId, id);
+
+  res.sendStatus(200);
+}
+
+async function decreasePriority(req: Request, res: Response) {
+  const { userId } = res.locals as { userId: number };
+  const id = parseInt(req.params.id);
+  if (!id) {
+    return res.status(400).send("ID inválido");
+  }
+
+  await readingIntentionService.decreasePriorityById(userId, id);
+
+  res.sendStatus(200);
+}
+
+export default { create, get, increasePriority, decreasePriority };

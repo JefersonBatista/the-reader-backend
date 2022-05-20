@@ -16,4 +16,16 @@ readingIntentionRouter.post(
 
 readingIntentionRouter.get("/", validateToken, readingIntentionController.get);
 
+readingIntentionRouter.patch(
+  "/:id/increase-priority",
+  validateToken,
+  readingIntentionController.increasePriority
+);
+
+readingIntentionRouter.patch(
+  "/:id/decrease-priority",
+  validateToken,
+  readingIntentionController.decreasePriority
+);
+
 export default readingIntentionRouter;

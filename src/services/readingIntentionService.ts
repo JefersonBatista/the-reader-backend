@@ -1,7 +1,7 @@
 import readingIntentionRepository, {
   CreateReadingIntentionData,
 } from "../repositories/readingIntentionRepository.js";
-import { conflictError } from "../utils/errorUtils.js";
+import { conflictError, notFoundError } from "../utils/errorUtils.js";
 
 async function create(userId: number, data: CreateReadingIntentionData) {
   const { title } = data;
@@ -19,4 +19,75 @@ async function getByUserId(userId: number) {
   return intentions;
 }
 
-export default { create, getByUserId };
+async function increasePriorityById(userId: number, id: number) {
+  const intentions = await readingIntentionRepository.findByUserId(userId);
+  const lastIndex = intentions.length - 1;
+
+  // For an empty list
+  if (lastIndex === -1) {
+    throw notFoundError(
+      "A intenção de leitura não foi encontrada entre as do usuário"
+    );
+  }
+
+  if (intentions[0].id === id) return; // do nothing for the most priority intention
+
+  // Linear search by id (the list is ordered by priority, not by id)
+  for (let i = 1; i <= lastIndex; i++) {
+    if (intentions[i].id === id) {
+      const { id: i1, priority: p1 } = intentions[i];
+      const current = { id: i1, priority: p1 };
+      const { id: i2, priority: p2 } = intentions[i - 1];
+      const prev = { id: i2, priority: p2 };
+
+      // Swapping priorities in DB
+      await readingIntentionRepository.swapIntentionPriorities(current, prev);
+      return;
+    }
+  }
+
+  // If the reading intention is not found among those of user
+  throw notFoundError(
+    "A intenção de leitura não foi encontrada entre as do usuário"
+  );
+}
+
+async function decreasePriorityById(userId: number, id: number) {
+  const intentions = await readingIntentionRepository.findByUserId(userId);
+  const lastIndex = intentions.length - 1;
+
+  // For an empty list
+  if (lastIndex === -1) {
+    throw notFoundError(
+      "A intenção de leitura não foi encontrada entre as do usuário"
+    );
+  }
+
+  if (intentions[lastIndex].id === id) return; // do nothing for the least priority intention
+
+  // Linear search by id (the list is ordered by priority, not by id)
+  for (let i = 0; i < lastIndex; i++) {
+    if (intentions[i].id === id) {
+      const { id: i1, priority: p1 } = intentions[i];
+      const current = { id: i1, priority: p1 };
+      const { id: i2, priority: p2 } = intentions[i + 1];
+      const next = { id: i2, priority: p2 };
+
+      // Swapping priorities in DB
+      await readingIntentionRepository.swapIntentionPriorities(current, next);
+      return;
+    }
+  }
+
+  // If the reading intention is not found among those of user
+  throw notFoundError(
+    "A intenção de leitura não foi encontrada entre as do usuário"
+  );
+}
+
+export default {
+  create,
+  getByUserId,
+  increasePriorityById,
+  decreasePriorityById,
+};

@@ -219,5 +219,59 @@ describe("Test authenticated routes", () => {
         expect(body[0].priority < body[1].priority).toBe(true);
       });
     });
+
+    describe("PATCH /reading-intentions/:id/increase-priority", () => {
+      it("should return status 200 and increase the priority of a reading intention", async () => {
+        const i1 = readingIntentionBodyFactory();
+        const i2 = readingIntentionBodyFactory();
+        const { id: id1, priority: priority1 } =
+          await prisma.readingIntention.create({ data: { userId, ...i1 } });
+        const { id: id2, priority: priority2 } =
+          await prisma.readingIntention.create({
+            data: { userId, ...i2 },
+          });
+
+        const { status } = await supertest(app)
+          .patch(`/reading-intentions/${id2}/increase-priority`)
+          .set("Authorization", `Bearer ${token}`);
+
+        const intention1 = await prisma.readingIntention.findUnique({
+          where: { id: id1 },
+        });
+        const intention2 = await prisma.readingIntention.findUnique({
+          where: { id: id2 },
+        });
+        expect(status).toBe(200);
+        expect(intention1.priority).toBe(priority2);
+        expect(intention2.priority).toBe(priority1);
+      });
+    });
+
+    describe("PATCH /reading-intentions/:id/decrease-priority", () => {
+      it("should return status 200 and decrease the priority of a reading intention", async () => {
+        const i1 = readingIntentionBodyFactory();
+        const i2 = readingIntentionBodyFactory();
+        const { id: id1, priority: priority1 } =
+          await prisma.readingIntention.create({ data: { userId, ...i1 } });
+        const { id: id2, priority: priority2 } =
+          await prisma.readingIntention.create({
+            data: { userId, ...i2 },
+          });
+
+        const { status } = await supertest(app)
+          .patch(`/reading-intentions/${id1}/decrease-priority`)
+          .set("Authorization", `Bearer ${token}`);
+
+        const intention1 = await prisma.readingIntention.findUnique({
+          where: { id: id1 },
+        });
+        const intention2 = await prisma.readingIntention.findUnique({
+          where: { id: id2 },
+        });
+        expect(status).toBe(200);
+        expect(intention1.priority).toBe(priority2);
+        expect(intention2.priority).toBe(priority1);
+      });
+    });
   });
 });

@@ -6,6 +6,11 @@ export type CreateReadingIntentionData = Omit<
   "id" | "userId" | "priority" | "date"
 >;
 
+export type IntentionPriority = {
+  id: number;
+  priority: number;
+};
+
 async function insert(userId: number, data: CreateReadingIntentionData) {
   await prisma.readingIntention.create({ data: { userId, ...data } });
 }
@@ -27,16 +32,29 @@ async function findByUserId(userId: number) {
   return intentions;
 }
 
-/* async function increasePriorityById(userId: number, id: number) {
-  const intentions = findByUserId(userId);
-}
+async function swapIntentionPriorities(
+  ip1: IntentionPriority,
+  ip2: IntentionPriority
+) {
+  await prisma.readingIntention.update({
+    where: { id: ip1.id },
+    data: { priority: 0 },
+  });
 
-async function decreasePriorityById(userId: number, id: number) {} */
+  await prisma.readingIntention.update({
+    where: { id: ip2.id },
+    data: { priority: ip1.priority },
+  });
+
+  await prisma.readingIntention.update({
+    where: { id: ip1.id },
+    data: { priority: ip2.priority },
+  });
+}
 
 export default {
   insert,
   findByTitle,
   findByUserId,
-  /* increasePriorityById,
-  decreasePriorityById, */
+  swapIntentionPriorities,
 };
