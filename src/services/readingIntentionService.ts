@@ -1,7 +1,11 @@
 import readingIntentionRepository, {
   CreateReadingIntentionData,
 } from "../repositories/readingIntentionRepository.js";
-import { conflictError, notFoundError } from "../utils/errorUtils.js";
+import {
+  conflictError,
+  notFoundError,
+  unauthorizedError,
+} from "../utils/errorUtils.js";
 
 async function create(userId: number, data: CreateReadingIntentionData) {
   const { title } = data;
@@ -85,9 +89,29 @@ async function decreasePriorityById(userId: number, id: number) {
   );
 }
 
+async function deleteById(userId: number, id: number) {
+  const intention = await findByIdOrFail(id);
+
+  if (intention.userId !== userId) {
+    throw unauthorizedError("A intenção de leitura não é do usuário");
+  }
+
+  await readingIntentionRepository.deleteById(id);
+}
+
+async function findByIdOrFail(id: number) {
+  const intention = await readingIntentionRepository.findById(id);
+  if (!intention) {
+    throw notFoundError("Não há intenção de leitura com o ID especificado");
+  }
+
+  return intention;
+}
+
 export default {
   create,
   getByUserId,
   increasePriorityById,
   decreasePriorityById,
+  deleteById,
 };

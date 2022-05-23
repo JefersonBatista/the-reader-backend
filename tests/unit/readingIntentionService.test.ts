@@ -142,4 +142,45 @@ describe("Test reading intention service", () => {
       expect(swapPriority).toBeCalledTimes(0);
     });
   });
+
+  describe("Deleting a reading intention", () => {
+    it("should throw not found error when intention doesn't exist", async () => {
+      jest
+        .spyOn(readingIntentionRepository, "findById")
+        .mockResolvedValue(null);
+
+      const remove = jest
+        .spyOn(readingIntentionRepository, "deleteById")
+        .mockResolvedValue(null);
+
+      try {
+        await readingIntentionService.deleteById(1, 1);
+      } catch (error) {
+        expect(error.type).toBe("not_found");
+      }
+      expect(remove).toBeCalledTimes(0);
+    });
+
+    it("should throw unauthorized error when reading intention isn't of the user", async () => {
+      const intention = readingIntentionBodyFactory();
+      jest.spyOn(readingIntentionRepository, "findById").mockResolvedValue({
+        id: 1,
+        userId: 2,
+        ...intention,
+        date: new Date(),
+        priority: 25,
+      });
+
+      const remove = jest
+        .spyOn(readingIntentionRepository, "deleteById")
+        .mockResolvedValue(null);
+
+      try {
+        await readingIntentionService.deleteById(1, 1);
+      } catch (error) {
+        expect(error.type).toBe("unauthorized");
+      }
+      expect(remove).toBeCalledTimes(0);
+    });
+  });
 });

@@ -28,4 +28,10 @@ readingIntentionRouter.patch(
   readingIntentionController.decreasePriority
 );
 
+readingIntentionRouter.delete(
+  "/:id/remove",
+  validateToken,
+  readingIntentionController.remove
+);
+
 export default readingIntentionRouter;

@@ -52,9 +52,20 @@ async function swapIntentionPriorities(
   });
 }
 
+async function deleteById(id: number) {
+  await prisma.readingIntention.delete({ where: { id } });
+}
+
+async function findById(id: number) {
+  const intention = await prisma.readingIntention.findUnique({ where: { id } });
+  return intention;
+}
+
 export default {
   insert,
   findByTitle,
   findByUserId,
   swapIntentionPriorities,
+  deleteById,
+  findById,
 };
