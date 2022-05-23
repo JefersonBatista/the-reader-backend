@@ -273,5 +273,25 @@ describe("Test authenticated routes", () => {
         expect(intention2.priority).toBe(priority1);
       });
     });
+
+    describe("DELETE /reading-intentions/:id/remove", () => {
+      it("should return status 200 and delete a reading intention", async () => {
+        const intention = readingIntentionBodyFactory();
+        const { id } = await prisma.readingIntention.create({
+          data: { userId, ...intention },
+        });
+
+        const { status } = await supertest(app)
+          .delete(`/reading-intentions/${id}/remove`)
+          .set("Authorization", `Bearer ${token}`);
+
+        const afterDeletion = await prisma.readingIntention.findUnique({
+          where: { id },
+        });
+
+        expect(status).toBe(200);
+        expect(afterDeletion).toBeNull();
+      });
+    });
   });
 });

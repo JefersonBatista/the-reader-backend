@@ -19,7 +19,10 @@ async function findUnfinishedByTitle(userId: number, title: string) {
 }
 
 async function findByUserId(userId: number) {
-  const readings = await prisma.reading.findMany({ where: { userId } });
+  const readings = await prisma.reading.findMany({
+    where: { userId },
+    orderBy: { id: "desc" },
+  });
 
   return readings;
 }
