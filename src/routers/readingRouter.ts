@@ -7,21 +7,20 @@ import bookmarkSchema from "../schemas/bookmarkSchema.js";
 import validateToken from "../middlewares/tokenValidationMiddleware.js";
 
 const readingRouter = Router();
+readingRouter.use(validateToken);
 
 readingRouter.post(
   "/",
   validateSchema(readingSchema),
-  validateToken,
   readingController.create
 );
 
-readingRouter.get("/", validateToken, readingController.get);
-readingRouter.patch("/:id/finish", validateToken, readingController.finish);
+readingRouter.get("/", readingController.get);
+readingRouter.patch("/:id/finish", readingController.finish);
 
 readingRouter.patch(
   "/:id/bookmark",
   validateSchema(bookmarkSchema),
-  validateToken,
   readingController.bookmark
 );
 

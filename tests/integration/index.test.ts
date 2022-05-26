@@ -7,6 +7,7 @@ import readingBodyFactory from "../factories/readingBodyFactory";
 import readingIntentionBodyFactory from "../factories/readingIntentionBodyFactory";
 import userService from "../../src/services/userService";
 import authService from "../../src/services/authService";
+import noteBodyFactory from "../factories/noteBodyFactory";
 
 describe("Test user and auth related routes", () => {
   beforeEach(async () => {
@@ -82,6 +83,7 @@ describe("Test authenticated routes", () => {
         });
         expect(status).toBe(201);
         expect(inserted).toBeTruthy();
+        expect(inserted.userId).toBe(userId);
       });
 
       it("should return status 201 and create reading with same title of a finished one", async () => {
@@ -102,6 +104,7 @@ describe("Test authenticated routes", () => {
         });
         expect(status).toBe(201);
         expect(inserted).toBeTruthy();
+        expect(inserted.userId).toBe(userId);
       });
 
       it("should return status 409 for a reading with same title of an unfinished one", async () => {
@@ -200,6 +203,7 @@ describe("Test authenticated routes", () => {
         });
         expect(status).toBe(201);
         expect(inserted).toBeTruthy();
+        expect(inserted.userId).toBe(userId);
       });
     });
 
@@ -291,6 +295,63 @@ describe("Test authenticated routes", () => {
 
         expect(status).toBe(200);
         expect(afterDeletion).toBeNull();
+      });
+    });
+  });
+
+  describe("Test reading notes related routes", () => {
+    beforeEach(async () => {
+      await prisma.$executeRaw`TRUNCATE TABLE "readings" CASCADE;`;
+    });
+
+    afterAll(async () => {
+      await prisma.$disconnect();
+    });
+
+    describe("POST /readings/:id/notes", () => {
+      it("should return status 201 and create a note for a reading", async () => {
+        const reading = readingBodyFactory();
+        const { id: readingId } = await prisma.reading.create({
+          data: { userId, ...reading },
+        });
+        const note = noteBodyFactory();
+
+        const { status } = await supertest(app)
+          .post(`/readings/${readingId}/notes`)
+          .set("Authorization", `Bearer ${token}`)
+          .send(note);
+
+        const inserted = await prisma.note.findFirst({ where: { readingId } });
+        expect(status).toBe(201);
+        expect(inserted.content).toBe(note.content);
+        expect(inserted.userId).toBe(userId);
+      });
+    });
+
+    describe("GET /readings/:id/notes", () => {
+      it("should return status 200 and get the notes of a reading", async () => {
+        const reading = readingBodyFactory();
+        const { id: readingId } = await prisma.reading.create({
+          data: { userId, ...reading },
+        });
+        const note1 = noteBodyFactory();
+        const note2 = noteBodyFactory();
+        const note3 = noteBodyFactory();
+
+        await prisma.note.createMany({
+          data: [
+            { userId, readingId, ...note1 },
+            { userId, readingId, ...note2 },
+            { userId, readingId, ...note3 },
+          ],
+        });
+
+        const { status, body } = await supertest(app)
+          .get(`/readings/${readingId}/notes`)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(status).toBe(200);
+        expect(body.length).toBe(3);
       });
     });
   });

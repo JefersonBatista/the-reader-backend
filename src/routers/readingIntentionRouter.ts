@@ -6,32 +6,26 @@ import readingIntentionSchema from "../schemas/readingIntentionSchema.js";
 import validateToken from "../middlewares/tokenValidationMiddleware.js";
 
 const readingIntentionRouter = Router();
+readingIntentionRouter.use(validateToken);
 
 readingIntentionRouter.post(
   "/",
   validateSchema(readingIntentionSchema),
-  validateToken,
   readingIntentionController.create
 );
 
-readingIntentionRouter.get("/", validateToken, readingIntentionController.get);
+readingIntentionRouter.get("/", readingIntentionController.get);
 
 readingIntentionRouter.patch(
   "/:id/increase-priority",
-  validateToken,
   readingIntentionController.increasePriority
 );
 
 readingIntentionRouter.patch(
   "/:id/decrease-priority",
-  validateToken,
   readingIntentionController.decreasePriority
 );
 
-readingIntentionRouter.delete(
-  "/:id/remove",
-  validateToken,
-  readingIntentionController.remove
-);
+readingIntentionRouter.delete("/:id/remove", readingIntentionController.remove);
 
 export default readingIntentionRouter;
