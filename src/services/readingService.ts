@@ -1,3 +1,4 @@
+import { Reading } from "@prisma/client";
 import readingRepository, {
   CreateReadingData,
 } from "../repositories/readingRepository.js";
@@ -29,9 +30,7 @@ async function getByUserId(userId: number) {
 async function finishById(userId: number, id: number) {
   const reading = await findByIdOrFail(id);
 
-  if (reading.userId !== userId) {
-    throw unauthorizedError("A leitura não é do usuário");
-  }
+  checkIfReadingIsOfUser(userId, reading);
 
   if (reading.endDate) {
     throw conflictError("A leitura já foi finalizada");
@@ -52,9 +51,7 @@ async function findByIdOrFail(id: number) {
 async function bookmarkById(userId: number, id: number, page: number) {
   const reading = await findByIdOrFail(id);
 
-  if (reading.userId !== userId) {
-    throw unauthorizedError("A leitura não é do usuário");
-  }
+  checkIfReadingIsOfUser(userId, reading);
 
   if (reading.endDate) {
     throw conflictError("A leitura já foi finalizada");
@@ -63,4 +60,17 @@ async function bookmarkById(userId: number, id: number, page: number) {
   await readingRepository.bookmarkById(id, page);
 }
 
-export default { create, getByUserId, finishById, bookmarkById };
+function checkIfReadingIsOfUser(userId: number, reading: Reading) {
+  if (reading.userId !== userId) {
+    throw unauthorizedError("A leitura não é do usuário");
+  }
+}
+
+export default {
+  create,
+  getByUserId,
+  finishById,
+  bookmarkById,
+  findByIdOrFail,
+  checkIfReadingIsOfUser,
+};
