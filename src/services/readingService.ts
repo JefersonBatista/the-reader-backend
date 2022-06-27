@@ -27,6 +27,13 @@ async function getByUserId(userId: number) {
   return readings;
 }
 
+async function getById(userId: number, id: number) {
+  const reading = await findByIdOrFail(id);
+  checkIfReadingIsOfUser(userId, reading);
+
+  return reading;
+}
+
 async function finishById(userId: number, id: number) {
   const reading = await findByIdOrFail(id);
 
@@ -69,8 +76,7 @@ function checkIfReadingIsOfUser(userId: number, reading: Reading) {
 export default {
   create,
   getByUserId,
+  getById,
   finishById,
   bookmarkById,
-  findByIdOrFail,
-  checkIfReadingIsOfUser,
 };
