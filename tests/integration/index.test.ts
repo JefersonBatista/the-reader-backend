@@ -128,6 +128,31 @@ describe("Test authenticated routes", () => {
       });
     });
 
+    describe("GET /readings/:id", () => {
+      it("should return status 200 and a specific reading of the user", async () => {
+        const r1 = readingBodyFactory();
+        const r2 = readingBodyFactory();
+        await prisma.reading.create({ data: { userId, ...r1 } });
+        const {
+          id: selectedId,
+          title,
+          author,
+        } = await prisma.reading.create({
+          data: { userId, ...r2 },
+        });
+
+        const { status, body } = await supertest(app)
+          .get(`/readings/${selectedId}`)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(status).toBe(200);
+        expect(body.id).toBe(selectedId);
+        expect(body.userId).toBe(userId);
+        expect(body.title).toBe(title);
+        expect(body.author).toBe(author);
+      });
+    });
+
     describe("GET /readings", () => {
       it("should return status 200 and the readings of the user", async () => {
         const r1 = readingBodyFactory();

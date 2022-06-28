@@ -4,15 +4,13 @@ import noteRepository, {
 import readingService from "./readingService.js";
 
 async function create(userId: number, readingId: number, data: CreateNoteData) {
-  const reading = await readingService.findByIdOrFail(readingId);
-  readingService.checkIfReadingIsOfUser(userId, reading);
+  await readingService.getById(userId, readingId);
 
   await noteRepository.insert(userId, readingId, data);
 }
 
 async function getByReadingId(userId: number, readingId: number) {
-  const reading = await readingService.findByIdOrFail(readingId);
-  readingService.checkIfReadingIsOfUser(userId, reading);
+  await readingService.getById(userId, readingId);
 
   const notes = await noteRepository.getByReadingId(readingId);
   return notes;

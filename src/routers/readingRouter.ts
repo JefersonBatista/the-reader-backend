@@ -15,6 +15,7 @@ readingRouter.post(
   readingController.create
 );
 
+readingRouter.get("/:id", readingController.getById);
 readingRouter.get("/", readingController.get);
 readingRouter.patch("/:id/finish", readingController.finish);
 
