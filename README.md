@@ -15,10 +15,10 @@ This app includes:
 - Addition of books you intend to read
   - Register that you started a reading you intended to do
   - Ordination of reading intentions by priority
+- Addition of notes in the reading of a book
 
 ## Next steps
 
-- Addition of notes in the reading of a book
 - Addition of tags in these notes
 
 ## Technologies
